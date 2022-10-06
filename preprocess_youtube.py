@@ -7,6 +7,7 @@ import argparse
 import glob
 
 def download_tmp_vids(video_dir, url_and_time):
+    # change to single download -> multi download
     for u, (s_t, e_t) in url_and_time.items():
         fname = u.split("=")[1] + '_tmp.mp4'
         print('Processing {}'.format(fname))
@@ -15,7 +16,9 @@ def download_tmp_vids(video_dir, url_and_time):
             ydl.download([u])
 
 def cut_resize_fps(video_dir, url_and_time, video_height, fps):
+    # use glob
     video_files = [os.path.join(video_dir, fp) for fp in os.listdir(video_dir) if fp[0]!='.']
+    # make function for replace
     for fp in video_files:
         (s_t, e_t) = url_and_time['https://www.youtube.com/watch?v='+fp.split('/')[-1].split('_tmp')[0]]
         clip = VideoFileClip(fp).subclip(s_t, e_t)
@@ -27,8 +30,10 @@ def cut_resize_fps(video_dir, url_and_time, video_height, fps):
             os.remove(fp)
 
 def save_frames(video_dir, image_dir):
+    # use glob
     video_ids = [fp.split('.')[0] for fp in os.listdir(video_dir) if fp[0]!='.']
 
+    # make this into single module -> multiple run
     for v_id in video_ids:
         os.makedirs(os.path.join(image_dir, v_id), exist_ok=True)
         vid_fp = os.path.join(video_dir, v_id+'.mp4')
