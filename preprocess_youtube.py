@@ -1,9 +1,10 @@
-import csv 
 import os
 import youtube_dl
 import cv2
 from moviepy.editor import *
 from utils import read_url_info
+import argparse
+import glob
 
 def download_tmp_vids(video_dir, url_and_time):
     for u, (s_t, e_t) in url_and_time.items():
@@ -44,15 +45,39 @@ def save_frames(video_dir, image_dir):
         vidcap.release()
         
 if __name__=='__main__':
-    video_dir = './vids'
-    image_dir = './imgs'
-    audio_dir = './audios'
+    parser = argparse.ArgumentParser(description='args for preprocess_youtube.py')
+    parser.add_argument('--video-dir', type=str, 
+                        default='./vids',
+                        help='path of your folder to save videos')
+    parser.add_argument('--image-dir', type=str, 
+                        default='./imgs',
+                        help='path of your folder to save image frames')
+    parser.add_argument('--audio-dir', type=str, 
+                        default='./audios',
+                        help='path of your folder to save image frames')
+    parser.add_argument('--url-fp', type=str, 
+                        default='./url.csv',
+                        help='path of your csv file containing Youtube url and time info')
+    parser.add_argument('--video-height', type=int, 
+                        default=720,
+                        help='height of your video to be saved')
+    parser.add_argument('--fps', type=int, 
+                        default=30,
+                        help='fps your video/image frames to be saved')
+                        
+    args = parser.parse_args()
 
-    url_fp = 'url.csv'
-    video_height = 720
+
+    video_dir = args.video_dir
+    image_dir = args.image_dir
+    audio_dir = args.audio_dir
+    url_fp = args.url_fp
+
+    video_height = args.video_height
+    fps = args.fps
+
     url_and_time = dict()
-    fps = 30
-
+    
     os.makedirs(video_dir, exist_ok=True)
     os.makedirs(image_dir, exist_ok=True)
 
@@ -60,3 +85,7 @@ if __name__=='__main__':
     download_tmp_vids(video_dir, url_and_time)
     cut_resize_fps(video_dir, url_and_time, video_height, fps)
     save_frames(video_dir, image_dir)
+
+    # TODO LIST
+    # USE GLOB
+    # ORGANIZE FUNCTIONS INTO MULTI-VID-EXTRACT / SINGLE-VID-EXTRACT. (MODULIZE ALL)
